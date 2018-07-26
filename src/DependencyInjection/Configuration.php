@@ -11,6 +11,7 @@ declare(strict_types = 1);
 
 namespace birkof\NetopiaMobilPay\DependencyInjection;
 
+use birkof\NetopiaMobilPay\NetopiaMobilPayBundle;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 
@@ -26,7 +27,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('netopia_mobil_pay');
+        $rootNode = $treeBuilder->root(NetopiaMobilPayBundle::ALIAS);
 
         $rootNode
             ->children()
@@ -34,10 +35,15 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('public_cert')->cannotBeEmpty()->end()
             ->scalarNode('private_key')->cannotBeEmpty()->end()
             ->scalarNode('signature')->cannotBeEmpty()->defaultValue('XXXX-XXXX-XXXX-XXXX-XXXX')->end()
-            ->scalarNode('confirm_url')->cannotBeEmpty()->defaultValue('netopia_mobilpay_payment_confirmation')->end()
-            ->scalarNode('return_url')->cannotBeEmpty()->defaultValue('netopia_mobilpay_payment_finished')->end()
+            ->scalarNode('confirm_url')->cannotBeEmpty()->defaultValue(sprintf('%s_confirm_url', NetopiaMobilPayBundle::ALIAS))->end()
+            ->scalarNode('return_url')->cannotBeEmpty()->defaultValue(sprintf('%s_return_url', NetopiaMobilPayBundle::ALIAS))->end()
             ->end();
 
         return $treeBuilder;
+    }
+
+    public function getNamespace()
+    {
+        return 'mmmmm';
     }
 }

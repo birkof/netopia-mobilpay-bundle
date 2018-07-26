@@ -12,6 +12,7 @@ declare(strict_types = 1);
 namespace birkof\NetopiaMobilPay\DependencyInjection;
 
 use birkof\NetopiaMobilPay\Configuration\NetopiaMobilPayConfiguration;
+use birkof\NetopiaMobilPay\NetopiaMobilPayBundle;
 use birkof\NetopiaMobilPay\Service\NetopiaMobilPayService;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -48,6 +49,14 @@ class NetopiaMobilPayExtension extends Extension
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function getAlias()
+    {
+        return NetopiaMobilPayBundle::ALIAS;
+    }
+
+    /**
      * @param array $config
      */
     private function inflateServicesInConfig(array &$config)
@@ -77,12 +86,12 @@ class NetopiaMobilPayExtension extends Extension
      */
     private function assignParametersToContainer(ContainerBuilder $container, array $config)
     {
-        $container->setParameter('netopia_mobilpay.payment_url', $config['payment_url']);
-        $container->setParameter('netopia_mobilpay.public_cert', $config['public_cert']);
-        $container->setParameter('netopia_mobilpay.private_key', $config['private_key']);
-        $container->setParameter('netopia_mobilpay.signature', $config['signature']);
-        $container->setParameter('netopia_mobilpay.confirm_url', $config['confirm_url']);
-        $container->setParameter('netopia_mobilpay.return_url', $config['return_url']);
+        $container->setParameter(sprintf('%s.payment_url', NetopiaMobilPayBundle::ALIAS), $config['payment_url']);
+        $container->setParameter(sprintf('%s.public_cert', NetopiaMobilPayBundle::ALIAS), $config['public_cert']);
+        $container->setParameter(sprintf('%s.private_key', NetopiaMobilPayBundle::ALIAS), $config['private_key']);
+        $container->setParameter(sprintf('%s.signature', NetopiaMobilPayBundle::ALIAS), $config['signature']);
+        $container->setParameter(sprintf('%s.confirm_url', NetopiaMobilPayBundle::ALIAS), $config['confirm_url']);
+        $container->setParameter(sprintf('%s.return_url', NetopiaMobilPayBundle::ALIAS), $config['return_url']);
     }
 
     /**
@@ -109,6 +118,6 @@ class NetopiaMobilPayExtension extends Extension
             ->addArgument(new Reference('logger'))
             ->setPublic(true);
 
-        $container->setDefinition('netopia_mobilpay.payment', $paymentServiceDefinition);
+        $container->setDefinition(sprintf('%s.payment', NetopiaMobilPayBundle::ALIAS), $paymentServiceDefinition);
     }
 }

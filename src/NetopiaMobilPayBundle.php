@@ -11,6 +11,7 @@ declare(strict_types = 1);
 
 namespace birkof\NetopiaMobilPay;
 
+use birkof\NetopiaMobilPay\DependencyInjection\NetopiaMobilPayExtension;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
 /**
@@ -19,5 +20,11 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class NetopiaMobilPayBundle extends Bundle
 {
-    const VERSION = '1.0.0';
+    const VERSION = '1.1.0';
+    const ALIAS = 'netopia_mobilpay';
+
+    public function getContainerExtension()
+    {
+        return new NetopiaMobilPayExtension();
+    }
 }
