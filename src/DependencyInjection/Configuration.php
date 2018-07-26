@@ -1,0 +1,43 @@
+<?php
+declare(strict_types = 1);
+/*
+ * This file is part of the NetopiaMobilPayBundle.
+ *
+ * (c) Daniel STANCU <birkof@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace birkof\NetopiaMobilPay\DependencyInjection;
+
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\ConfigurationInterface;
+
+/**
+ * Class Configuration
+ * @package birkof\NetopiaMobilPay\DependencyInjection
+ */
+class Configuration implements ConfigurationInterface
+{
+    /**
+     * @return TreeBuilder
+     */
+    public function getConfigTreeBuilder()
+    {
+        $treeBuilder = new TreeBuilder();
+        $rootNode = $treeBuilder->root('netopia_mobil_pay');
+
+        $rootNode
+            ->children()
+            ->scalarNode('payment_url')->cannotBeEmpty()->end()
+            ->scalarNode('public_cert')->cannotBeEmpty()->end()
+            ->scalarNode('private_key')->cannotBeEmpty()->end()
+            ->scalarNode('signature')->cannotBeEmpty()->defaultValue('XXXX-XXXX-XXXX-XXXX-XXXX')->end()
+            ->scalarNode('confirm_url')->cannotBeEmpty()->defaultValue('netopia_mobilpay_payment_confirmation')->end()
+            ->scalarNode('return_url')->cannotBeEmpty()->defaultValue('netopia_mobilpay_payment_finished')->end()
+            ->end();
+
+        return $treeBuilder;
+    }
+}

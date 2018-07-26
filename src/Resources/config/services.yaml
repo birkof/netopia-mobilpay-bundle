@@ -1,0 +1,3 @@
+services:
+    birkof\NetopiaMobilPay\Service\NetopiaMobilPayServiceInterface:
+        alias: 'netopia_mobilpay.payment'

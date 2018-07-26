@@ -1,0 +1,23 @@
+{
+  "name": "birkof/netopia-mobilpay-bundle",
+  "description": "A Symfony 3, 4 bundle to implement MobilPay.ro payment gateway",
+  "type": "symfony-bundle",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "birkof\\NetopiaMobilPay\\": "src/"
+    }
+  },
+  "require": {
+    "php": "^5.6|^7.0|^7.1|^7.2",
+    "birkof/netopia-mobilpay": "^1.0",
+    "symfony/monolog-bundle": "^3.3",
+    "symfony/routing": "^4.1"
+  },
+  "require-dev": {
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
