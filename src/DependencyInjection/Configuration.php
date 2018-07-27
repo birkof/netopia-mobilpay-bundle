@@ -31,9 +31,9 @@ class Configuration implements ConfigurationInterface
 
         $rootNode
             ->children()
-            ->scalarNode('payment_url')->cannotBeEmpty()->end()
-            ->scalarNode('public_cert')->cannotBeEmpty()->end()
-            ->scalarNode('private_key')->cannotBeEmpty()->end()
+            ->scalarNode('payment_url')->defaultValue('http://sandboxsecure.mobilpay.ro')->end()
+            ->scalarNode('public_cert')->defaultNull()->end()
+            ->scalarNode('private_key')->defaultNull()->end()
             ->scalarNode('signature')->cannotBeEmpty()->defaultValue('XXXX-XXXX-XXXX-XXXX-XXXX')->end()
             ->scalarNode('confirm_url')->cannotBeEmpty()->defaultValue(sprintf('%s_confirm_url', NetopiaMobilPayBundle::ALIAS))->end()
             ->scalarNode('return_url')->cannotBeEmpty()->defaultValue(sprintf('%s_return_url', NetopiaMobilPayBundle::ALIAS))->end()
