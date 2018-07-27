@@ -20,7 +20,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class NetopiaMobilPayBundle extends Bundle
 {
-    const VERSION = '1.1.0';
+    const VERSION = '1.2.1';
     const ALIAS = 'netopia_mobilpay';
 
     public function getContainerExtension()
