@@ -177,8 +177,6 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
 
         /** @var array $address */
         $address = array_merge($addressDefault, $address);
-        dump($address);
-        exit;
 
         $billingAddress = new \Mobilpay_Payment_Address();
         $billingAddress->type = $address['type'];
