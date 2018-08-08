@@ -81,6 +81,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
             $objPmReqCard = new \Mobilpay_Payment_Request_Card();
             $objPmReqCard->orderId = $orderId;
             $objPmReqCard->signature = $this->mobilPayConfiguration->getSignature();
+            $objPmReqCard->service = $this->mobilPayConfiguration->getSmsService();
             $objPmReqCard->confirmUrl = $this->mobilPayConfiguration->getConfirmUrl();
             $objPmReqCard->returnUrl = $this->mobilPayConfiguration->getReturnUrl();
 

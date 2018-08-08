@@ -40,6 +40,9 @@ final class NetopiaMobilPayConfiguration
     private $signature;
 
     /** @var string */
+    private $smsService;
+
+    /** @var string */
     private $confirmUrl;
 
     /** @var string */
@@ -53,6 +56,9 @@ final class NetopiaMobilPayConfiguration
     public function __construct(RouterInterface $router)
     {
         $this->router = $router;
+
+        $this->setConfirmUrl('netopia_mobilpay_confirm_url');
+        $this->setReturnUrl('netopia_mobilpay_return_url');
     }
 
     /**
@@ -131,6 +137,26 @@ final class NetopiaMobilPayConfiguration
     public function setSignature(string $signature): NetopiaMobilPayConfiguration
     {
         $this->signature = $signature;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSmsService(): string
+    {
+        return $this->smsService;
+    }
+
+    /**
+     * @param string $smsService
+     *
+     * @return NetopiaMobilPayConfiguration
+     */
+    public function setSmsService(string $smsService): NetopiaMobilPayConfiguration
+    {
+        $this->smsService = $smsService;
 
         return $this;
     }

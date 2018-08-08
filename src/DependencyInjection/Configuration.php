@@ -35,8 +35,7 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('public_cert')->defaultNull()->end()
             ->scalarNode('private_key')->defaultNull()->end()
             ->scalarNode('signature')->cannotBeEmpty()->defaultValue('XXXX-XXXX-XXXX-XXXX-XXXX')->end()
-            ->scalarNode('confirm_url')->cannotBeEmpty()->defaultValue(sprintf('%s_confirm_url', NetopiaMobilPayBundle::ALIAS))->end()
-            ->scalarNode('return_url')->cannotBeEmpty()->defaultValue(sprintf('%s_return_url', NetopiaMobilPayBundle::ALIAS))->end()
+            ->scalarNode('sms_service')->cannotBeEmpty()->defaultValue('000000-000000-000000')->end()
             ->end();
 
         return $treeBuilder;
