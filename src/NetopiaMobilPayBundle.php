@@ -1,5 +1,4 @@
 <?php
-declare(strict_types = 1);
 /*
  * This file is part of the NetopiaMobilPayBundle.
  *
@@ -20,7 +19,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class NetopiaMobilPayBundle extends Bundle
 {
-    const VERSION = '1.1.0';
+    const VERSION = '1.4.0';
     const ALIAS = 'netopia_mobilpay';
 
     public function getContainerExtension()
