@@ -34,9 +34,8 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('payment_url')->defaultValue('http://sandboxsecure.mobilpay.ro')->end()
             ->scalarNode('public_cert')->defaultNull()->end()
             ->scalarNode('private_key')->defaultNull()->end()
-            ->scalarNode('signature')->cannotBeEmpty()->defaultValue('XXXX-XXXX-XXXX-XXXX-XXXX')->end()
-            ->scalarNode('sms_service')->cannotBeEmpty()->defaultValue('000000-000000-000000')->end()
-            ->end();
+            ->scalarNode('sms_services')->defaultNull()->end()
+            ->scalarNode('signature')->cannotBeEmpty()->defaultValue('XXXX-XXXX-XXXX-XXXX-XXXX')->end();
 
         return $treeBuilder;
     }

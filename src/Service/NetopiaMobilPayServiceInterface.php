@@ -37,7 +37,7 @@ interface NetopiaMobilPayServiceInterface
      *
      * @return mixed
      */
-    public function createPaymentObject(
+    public function createCreditCardPaymentObject(
         $orderId,
         $amount,
         $currency = self::CURRENCY_RON,
@@ -45,5 +45,16 @@ interface NetopiaMobilPayServiceInterface
         array $billing = [],
         array $shipping = [],
         array $creditCard = []
+    );
+
+    /**
+     * @param $orderId
+     * @param $amount
+     *
+     * @return mixed
+     */
+    public function createSmsPaymentObject(
+        $orderId,
+        $amount
     );
 }

@@ -81,7 +81,6 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
             $objPmReqCard = new \Mobilpay_Payment_Request_Card();
             $objPmReqCard->orderId = $orderId;
             $objPmReqCard->signature = $this->mobilPayConfiguration->getSignature();
-            $objPmReqCard->service = $this->mobilPayConfiguration->getSmsService();
             $objPmReqCard->confirmUrl = $this->mobilPayConfiguration->getConfirmUrl();
             $objPmReqCard->returnUrl = $this->mobilPayConfiguration->getReturnUrl();
 
@@ -113,8 +112,35 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
 
             throw new NetopiaMobilPayException('Payment failed.');
         }
+    }
 
-        return;
+    /**
+     * @param     $orderId
+     * @param int $price
+     *
+     * @return mixed|\Mobilpay_Payment_Request_Sms
+     * @throws NetopiaMobilPayException
+     */
+    public function createSmsPaymentObject(
+        $orderId,
+        $price = 0
+    ) {
+        try {
+            $objPmReqCard = new \Mobilpay_Payment_Request_Sms();
+            $objPmReqCard->orderId = $orderId;
+            $objPmReqCard->signature = $this->mobilPayConfiguration->getSignature();
+            $objPmReqCard->service = $this->mobilPayConfiguration->getServiceFromAmount($price);
+            $objPmReqCard->confirmUrl = $this->mobilPayConfiguration->getConfirmUrl();
+            $objPmReqCard->returnUrl = $this->mobilPayConfiguration->getReturnUrl();
+
+            $objPmReqCard->encrypt($this->mobilPayConfiguration->getPublicCert());
+
+            return $objPmReqCard;
+        } catch (\Exception $e) {
+            $this->logger->error('Payment failed.', [$e->getMessage()]);
+
+            throw new NetopiaMobilPayException('Payment failed.');
+        }
     }
 
     /**
@@ -147,9 +173,8 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
         $objPmi->expMonth = $creditCard['expMonth'];
         $objPmi->cvv2 = $creditCard['cvv2'];
         $objPmi->name = $creditCard['name']; //obligatoriu!!!
-        $objPmReqCard->paymentInstrument = $objPmi;
 
-        return $objPmReqCard;
+        return $objPmi;
     }
 
     /**

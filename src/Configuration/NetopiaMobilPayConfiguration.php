@@ -31,6 +31,9 @@ final class NetopiaMobilPayConfiguration
     private $router;
 
     /** @var string */
+    private $projectDir;
+
+    /** @var string */
     private $paymentUrl;
 
     /** @var string */
@@ -43,7 +46,7 @@ final class NetopiaMobilPayConfiguration
     private $signature;
 
     /** @var string */
-    private $smsService;
+    private $smsServices;
 
     /** @var string */
     private $confirmUrl;
@@ -67,7 +70,27 @@ final class NetopiaMobilPayConfiguration
     /**
      * @return string
      */
-    public function getPaymentUrl(): string
+    public function getProjectDir()
+    {
+        return $this->projectDir;
+    }
+
+    /**
+     * @param string $projectDir
+     *
+     * @return NetopiaMobilPayConfiguration
+     */
+    public function setProjectDir($projectDir)
+    {
+        $this->projectDir = $projectDir;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPaymentUrl()
     {
         return $this->paymentUrl;
     }
@@ -99,7 +122,8 @@ final class NetopiaMobilPayConfiguration
      */
     public function setPublicCert(string $publicCert): NetopiaMobilPayConfiguration
     {
-        $this->publicCert = $publicCert;
+        $publicCertFile = $this->projectDir.$publicCert;
+        $this->publicCert = is_file($publicCertFile) && is_readable($publicCertFile) ? file_get_contents($publicCertFile) : $publicCert;
 
         return $this;
     }
@@ -119,7 +143,8 @@ final class NetopiaMobilPayConfiguration
      */
     public function setPrivateKey(string $privateKey): NetopiaMobilPayConfiguration
     {
-        $this->privateKey = $privateKey;
+        $privateKeyFile = $this->projectDir.$privateKey;
+        $this->privateKey = is_file($privateKeyFile) && is_readable($privateKeyFile) ? file_get_contents($privateKeyFile) : $privateKey;
 
         return $this;
     }
@@ -147,21 +172,56 @@ final class NetopiaMobilPayConfiguration
     /**
      * @return string
      */
-    public function getSmsService(): string
+    public function getSmsServices()
     {
-        return $this->smsService;
+        return $this->smsServices;
     }
 
     /**
-     * @param string $smsService
+     * @param string $smsServices
      *
-     * @return NetopiaMobilPayConfiguration
+     * @return $this
      */
-    public function setSmsService(string $smsService): NetopiaMobilPayConfiguration
+    public function setSmsServices($smsServices)
     {
-        $this->smsService = $smsService;
+        $smsServicesJsonFile = $this->projectDir.$smsServices;
+        $smsServicesArray = json_decode(
+            (is_file($smsServicesJsonFile) && is_readable($smsServicesJsonFile) ? file_get_contents($smsServicesJsonFile) : $smsServices),
+            true
+        );
+
+        if (JSON_ERROR_NONE !== json_last_error()) {
+            throw new \RuntimeException(
+                sprintf(
+                    'Error decoding JSON "%s" from string: %s',
+                    json_last_error_msg(),
+                    $smsServices
+                )
+            );
+        }
+
+        $this->smsServices = $smsServicesArray;
 
         return $this;
+    }
+
+    /**
+     * @param int $amount
+     *
+     * @return mixed
+     */
+    public function getServiceFromAmount($amount)
+    {
+        if (empty($this->smsServices[$amount])) {
+            throw new \RuntimeException(
+                sprintf(
+                    'There is no such service defined for amount "%s"',
+                    $amount
+                )
+            );
+        }
+
+        return $this->smsServices[$amount];
     }
 
     /**
