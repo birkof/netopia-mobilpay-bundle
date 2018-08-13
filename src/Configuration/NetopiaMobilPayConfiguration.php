@@ -24,6 +24,9 @@ final class NetopiaMobilPayConfiguration
     const CURRENCY_EUR = 'EUR';
     const CURRENCY_USD = 'USD';
 
+    const RETURN_URL = 'netopia_mobilpay_return_url';
+    const CONFIRM_URL = 'netopia_mobilpay_confirm_url';
+
     /** @var RouterInterface */
     private $router;
 
@@ -57,8 +60,8 @@ final class NetopiaMobilPayConfiguration
     {
         $this->router = $router;
 
-        $this->setConfirmUrl('netopia_mobilpay_confirm_url');
-        $this->setReturnUrl('netopia_mobilpay_return_url');
+        $this->setConfirmUrl(self::CONFIRM_URL);
+        $this->setReturnUrl(self::RETURN_URL);
     }
 
     /**
