@@ -1,5 +1,4 @@
 <?php
-declare(strict_types = 1);
 /*
  * This file is part of the NetopiaMobilPayBundle.
  *
@@ -24,7 +23,7 @@ interface NetopiaMobilPayServiceInterface
     /**
      * @return NetopiaMobilPayConfiguration
      */
-    public function getMobilPayConfiguration(): NetopiaMobilPayConfiguration;
+    public function getMobilPayConfiguration();
 
     /**
      * @param        $orderId

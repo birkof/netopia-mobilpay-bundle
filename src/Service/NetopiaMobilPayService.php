@@ -1,5 +1,4 @@
 <?php
-declare(strict_types = 1);
 /*
  * This file is part of the NetopiaMobilPayBundle.
  *
@@ -14,9 +13,6 @@ namespace birkof\NetopiaMobilPay\Service;
 use birkof\NetopiaMobilPay\Configuration\NetopiaMobilPayConfiguration;
 use birkof\NetopiaMobilPay\Exception\NetopiaMobilPayException;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Config\Definition\Builder\TreeBuilder;
-use Symfony\Component\Config\Definition\ConfigurationInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 /**
@@ -37,7 +33,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
     /**
      * @return NetopiaMobilPayConfiguration
      */
-    public function getMobilPayConfiguration(): NetopiaMobilPayConfiguration
+    public function getMobilPayConfiguration()
     {
         return $this->mobilPayConfiguration;
     }
@@ -65,16 +61,16 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
      * @param array  $shippingAddress
      * @param array  $creditCard
      *
-     * @return mixed|\Mobilpay_Payment_Request_Card|void
+     * @return mixed|\Mobilpay_Payment_Request_Card
      * @throws NetopiaMobilPayException
      */
-    public function createPaymentObject(
+    public function createCreditCardPaymentObject(
         $orderId,
         $amount,
         $currency = NetopiaMobilPayConfiguration::CURRENCY_RON,
         $details = '',
         array $billingAddress = [],
-        array $shippingAddress  = [],
+        array $shippingAddress = [],
         array $creditCard = []
     ) {
         try {

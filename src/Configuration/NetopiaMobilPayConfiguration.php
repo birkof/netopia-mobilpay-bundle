@@ -1,5 +1,4 @@
 <?php
-declare(strict_types = 1);
 /*
  * This file is part of the NetopiaMobilPayBundle.
  *
@@ -100,7 +99,7 @@ final class NetopiaMobilPayConfiguration
      *
      * @return NetopiaMobilPayConfiguration
      */
-    public function setPaymentUrl(string $paymentUrl): NetopiaMobilPayConfiguration
+    public function setPaymentUrl($paymentUrl)
     {
         $this->paymentUrl = $paymentUrl;
 
@@ -110,7 +109,7 @@ final class NetopiaMobilPayConfiguration
     /**
      * @return string
      */
-    public function getPublicCert(): string
+    public function getPublicCert()
     {
         return $this->publicCert;
     }
@@ -120,7 +119,7 @@ final class NetopiaMobilPayConfiguration
      *
      * @return NetopiaMobilPayConfiguration
      */
-    public function setPublicCert(string $publicCert): NetopiaMobilPayConfiguration
+    public function setPublicCert($publicCert)
     {
         $publicCertFile = $this->projectDir.$publicCert;
         $this->publicCert = is_file($publicCertFile) && is_readable($publicCertFile) ? file_get_contents($publicCertFile) : $publicCert;
@@ -131,7 +130,7 @@ final class NetopiaMobilPayConfiguration
     /**
      * @return string
      */
-    public function getPrivateKey(): string
+    public function getPrivateKey()
     {
         return $this->privateKey;
     }
@@ -141,7 +140,7 @@ final class NetopiaMobilPayConfiguration
      *
      * @return NetopiaMobilPayConfiguration
      */
-    public function setPrivateKey(string $privateKey): NetopiaMobilPayConfiguration
+    public function setPrivateKey($privateKey)
     {
         $privateKeyFile = $this->projectDir.$privateKey;
         $this->privateKey = is_file($privateKeyFile) && is_readable($privateKeyFile) ? file_get_contents($privateKeyFile) : $privateKey;
@@ -152,7 +151,7 @@ final class NetopiaMobilPayConfiguration
     /**
      * @return string
      */
-    public function getSignature(): string
+    public function getSignature()
     {
         return $this->signature;
     }
@@ -162,7 +161,7 @@ final class NetopiaMobilPayConfiguration
      *
      * @return NetopiaMobilPayConfiguration
      */
-    public function setSignature(string $signature): NetopiaMobilPayConfiguration
+    public function setSignature($signature)
     {
         $this->signature = $signature;
 
@@ -227,7 +226,7 @@ final class NetopiaMobilPayConfiguration
     /**
      * @return string
      */
-    public function getConfirmUrl(): string
+    public function getConfirmUrl()
     {
         return $this->confirmUrl;
     }
@@ -237,7 +236,7 @@ final class NetopiaMobilPayConfiguration
      *
      * @return NetopiaMobilPayConfiguration
      */
-    public function setConfirmUrl(string $confirmUrl): NetopiaMobilPayConfiguration
+    public function setConfirmUrl($confirmUrl)
     {
         $this->confirmUrl = $this->router->generate(
             $confirmUrl,
@@ -251,7 +250,7 @@ final class NetopiaMobilPayConfiguration
     /**
      * @return string
      */
-    public function getReturnUrl(): string
+    public function getReturnUrl()
     {
         return $this->returnUrl;
     }
@@ -261,7 +260,7 @@ final class NetopiaMobilPayConfiguration
      *
      * @return NetopiaMobilPayConfiguration
      */
-    public function setReturnUrl(string $returnUrl): NetopiaMobilPayConfiguration
+    public function setReturnUrl($returnUrl)
     {
         $this->returnUrl = $this->router->generate(
             $returnUrl,
