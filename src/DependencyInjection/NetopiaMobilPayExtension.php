@@ -101,7 +101,7 @@ class NetopiaMobilPayExtension extends Extension
         /** @var Definition $paymentConfigurationDefinition */
         $paymentConfigurationDefinition = (new Definition(NetopiaMobilPayConfiguration::class))
             ->addMethodCall('setPaymentUrl', [$config['payment_url']])
-            ->addMethodCall('setProjectDir', [new Reference('%kernel.project_dir%') . '/'])
+            ->addMethodCall('setProjectDir', ['%kernel.project_dir%'])
             ->addMethodCall('setPublicCert', [$config['public_cert']])
             ->addMethodCall('setPrivateKey', [$config['private_key']])
             ->addMethodCall('setSmsServices', [$config['sms_services']])

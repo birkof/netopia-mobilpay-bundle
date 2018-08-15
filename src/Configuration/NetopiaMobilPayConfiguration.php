@@ -81,7 +81,7 @@ final class NetopiaMobilPayConfiguration
      */
     public function setProjectDir($projectDir)
     {
-        $this->projectDir = $projectDir;
+        $this->projectDir = $projectDir.'/';
 
         return $this;
     }
@@ -121,7 +121,7 @@ final class NetopiaMobilPayConfiguration
      */
     public function setPublicCert($publicCert)
     {
-        $publicCertFile = $this->projectDir.$publicCert;
+        $publicCertFile = $this->composeFilePath($publicCert);
         $this->publicCert = is_file($publicCertFile) && is_readable($publicCertFile) ? file_get_contents($publicCertFile) : $publicCert;
 
         return $this;
@@ -142,7 +142,7 @@ final class NetopiaMobilPayConfiguration
      */
     public function setPrivateKey($privateKey)
     {
-        $privateKeyFile = $this->projectDir.$privateKey;
+        $privateKeyFile = $this->composeFilePath($privateKey);
         $this->privateKey = is_file($privateKeyFile) && is_readable($privateKeyFile) ? file_get_contents($privateKeyFile) : $privateKey;
 
         return $this;
@@ -183,7 +183,7 @@ final class NetopiaMobilPayConfiguration
      */
     public function setSmsServices($smsServices)
     {
-        $smsServicesJsonFile = $this->projectDir.$smsServices;
+        $smsServicesJsonFile = $this->composeFilePath($smsServices);
         $smsServicesArray = json_decode(
             (is_file($smsServicesJsonFile) && is_readable($smsServicesJsonFile) ? file_get_contents($smsServicesJsonFile) : $smsServices),
             true
@@ -269,5 +269,15 @@ final class NetopiaMobilPayConfiguration
         );
 
         return $this;
+    }
+
+    /**
+     * @param $file
+     *
+     * @return string
+     */
+    protected function composeFilePath($file)
+    {
+        return $this->projectDir.ltrim($file, '/');
     }
 }
