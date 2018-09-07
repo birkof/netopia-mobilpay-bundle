@@ -33,6 +33,7 @@ interface NetopiaMobilPayServiceInterface
      * @param array  $billing
      * @param array  $shipping
      * @param array  $creditCard
+     * @param array  $extraParameters
      *
      * @return mixed
      */
@@ -43,7 +44,8 @@ interface NetopiaMobilPayServiceInterface
         $details = '',
         array $billing = [],
         array $shipping = [],
-        array $creditCard = []
+        array $creditCard = [],
+        array $extraParameters = []
     );
 
     /**

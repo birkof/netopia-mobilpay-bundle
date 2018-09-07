@@ -60,6 +60,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
      * @param array  $billingAddress
      * @param array  $shippingAddress
      * @param array  $creditCard
+     * @param array  $extraParameters
      *
      * @return mixed|\Mobilpay_Payment_Request_Card
      * @throws NetopiaMobilPayException
@@ -71,7 +72,8 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
         $details = '',
         array $billingAddress = [],
         array $shippingAddress = [],
-        array $creditCard = []
+        array $creditCard = [],
+        array $extraParameters = []
     ) {
         try {
             $objPmReqCard = new \Mobilpay_Payment_Request_Card();
@@ -98,6 +100,11 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
             // In case of having CC.
             if (!empty($creditCard)) {
                 $objPmReqCard->paymentInstrument = $this->composeCreditCardObject($creditCard);
+            }
+
+            // In case of having payment extra parameters.
+            if (!empty($extraParameters)) {
+                $objPmReqCard->params = $extraParameters;
             }
 
             $objPmReqCard->encrypt($this->mobilPayConfiguration->getPublicCert());
