@@ -70,3 +70,10 @@ The bulk of the documentation is stored in the `./src/Resources/doc/index.md` fi
 This bundle is under the MIT license. See the complete license in the bundle:
 
 [Read the License](./LICENSE.md)
+
+## Features, Bugs and Collaborating
+
+All of the code is provided as-is. We will not provide on-going support for any bugs that may be found. Please submit bug
+and features requests - we will review them but we do not guarantee that they will be addressed. Pull requests are welcome
+and we'll review them as quickly as we can.
+
