@@ -105,6 +105,16 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
             // In case of having payment extra parameters.
             if (!empty($extraParameters)) {
                 $objPmReqCard->params = $extraParameters;
+
+                // PLEASE STORE AND USE THIS TOKEN WITH MAXIMUM CARE!!!
+                if (!empty($extraParameters['token_id'])) {
+                    $objPmReqCard->invoice->tokenId = $extraParameters['token_id'];
+
+                    // Payment with Token need a special route.
+                    $this->mobilPayConfiguration->setPaymentUrl(
+                        $this->mobilPayConfiguration->getPaymentUrl().'/card4'
+                    );
+                }
             }
 
             $objPmReqCard->encrypt($this->mobilPayConfiguration->getPublicCert());
@@ -272,3 +282,4 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
         return $shippingAddress;
     }
 }
+
