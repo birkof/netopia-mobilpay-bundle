@@ -135,14 +135,14 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
      * @throws NetopiaMobilPayException
      */
     public function createSmsPaymentObject(
-        $orderId,
-        $price = 0
+        $orderId = null,
+        $serviceId = null
     ) {
         try {
             $objPmReqCard = new \Mobilpay_Payment_Request_Sms();
             $objPmReqCard->orderId = $orderId;
+            $objPmReqCard->service = $serviceId;
             $objPmReqCard->signature = $this->mobilPayConfiguration->getSignature();
-            $objPmReqCard->service = $this->mobilPayConfiguration->getServiceFromAmount($price);
             $objPmReqCard->confirmUrl = $this->mobilPayConfiguration->getConfirmUrl();
             $objPmReqCard->returnUrl = $this->mobilPayConfiguration->getReturnUrl();
 

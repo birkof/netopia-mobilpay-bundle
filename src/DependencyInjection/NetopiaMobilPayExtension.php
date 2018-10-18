@@ -89,7 +89,6 @@ class NetopiaMobilPayExtension extends Extension
         $container->setParameter(sprintf('%s.public_cert', NetopiaMobilPayBundle::ALIAS), $config['public_cert']);
         $container->setParameter(sprintf('%s.private_key', NetopiaMobilPayBundle::ALIAS), $config['private_key']);
         $container->setParameter(sprintf('%s.signature', NetopiaMobilPayBundle::ALIAS), $config['signature']);
-        $container->setParameter(sprintf('%s.sms_services', NetopiaMobilPayBundle::ALIAS), $config['sms_services']);
     }
 
     /**
@@ -104,7 +103,6 @@ class NetopiaMobilPayExtension extends Extension
             ->addMethodCall('setProjectDir', ['%kernel.project_dir%'])
             ->addMethodCall('setPublicCert', [$config['public_cert']])
             ->addMethodCall('setPrivateKey', [$config['private_key']])
-            ->addMethodCall('setSmsServices', [$config['sms_services']])
             ->addMethodCall('setSignature', [$config['signature']])
             ->addArgument(new Reference('router'))
             ->setPublic(false);

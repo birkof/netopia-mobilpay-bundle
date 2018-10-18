@@ -45,9 +45,6 @@ final class NetopiaMobilPayConfiguration
     private $signature;
 
     /** @var string */
-    private $smsServices;
-
-    /** @var string */
     private $confirmUrl;
 
     /** @var string */
@@ -166,61 +163,6 @@ final class NetopiaMobilPayConfiguration
         $this->signature = $signature;
 
         return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getSmsServices()
-    {
-        return $this->smsServices;
-    }
-
-    /**
-     * @param string $smsServices
-     *
-     * @return $this
-     */
-    public function setSmsServices($smsServices)
-    {
-        $smsServicesJsonFile = $this->composeFilePath($smsServices);
-        $smsServicesArray = json_decode(
-            (is_file($smsServicesJsonFile) && is_readable($smsServicesJsonFile) ? file_get_contents($smsServicesJsonFile) : $smsServices),
-            true
-        );
-
-        if (JSON_ERROR_NONE !== json_last_error()) {
-            throw new \RuntimeException(
-                sprintf(
-                    'Error decoding JSON "%s" from string: %s',
-                    json_last_error_msg(),
-                    $smsServices
-                )
-            );
-        }
-
-        $this->smsServices = $smsServicesArray;
-
-        return $this;
-    }
-
-    /**
-     * @param int $amount
-     *
-     * @return mixed
-     */
-    public function getServiceFromAmount($amount)
-    {
-        if (empty($this->smsServices[$amount])) {
-            throw new \RuntimeException(
-                sprintf(
-                    'There is no such service defined for amount "%s"',
-                    $amount
-                )
-            );
-        }
-
-        return $this->smsServices[$amount];
     }
 
     /**
