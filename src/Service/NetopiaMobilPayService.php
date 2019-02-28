@@ -12,6 +12,11 @@ namespace birkof\NetopiaMobilPay\Service;
 
 use birkof\NetopiaMobilPay\Configuration\NetopiaMobilPayConfiguration;
 use birkof\NetopiaMobilPay\Exception\NetopiaMobilPayException;
+use Mobilpay\Payment\Address;
+use Mobilpay\Payment\Invoice;
+use Mobilpay\Payment\Request\Card as CardRequest;
+use Mobilpay\Payment\Instrument\Card as CardInstrument;
+use Mobilpay\Payment\Request\Sms as SmsRequest;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -62,7 +67,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
      * @param array  $creditCard
      * @param array  $extraParameters
      *
-     * @return mixed|\Mobilpay_Payment_Request_Card
+     * @return mixed|CardRequest
      * @throws NetopiaMobilPayException
      */
     public function createCreditCardPaymentObject(
@@ -76,13 +81,13 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
         array $extraParameters = []
     ) {
         try {
-            $objPmReqCard = new \Mobilpay_Payment_Request_Card();
+            $objPmReqCard = new CardRequest();
             $objPmReqCard->orderId = $orderId;
             $objPmReqCard->signature = $this->mobilPayConfiguration->getSignature();
             $objPmReqCard->confirmUrl = $this->mobilPayConfiguration->getConfirmUrl();
             $objPmReqCard->returnUrl = $this->mobilPayConfiguration->getReturnUrl();
 
-            $objPmReqCard->invoice = new \Mobilpay_Payment_Invoice();
+            $objPmReqCard->invoice = new Invoice();
             $objPmReqCard->invoice->currency = $currency;
             $objPmReqCard->invoice->amount = $amount;
             $objPmReqCard->invoice->details = $details;
@@ -131,7 +136,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
      * @param     $orderId
      * @param int $price
      *
-     * @return mixed|\Mobilpay_Payment_Request_Sms
+     * @return mixed|SmsRequest
      * @throws NetopiaMobilPayException
      */
     public function createSmsPaymentObject(
@@ -139,7 +144,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
         $serviceId = null
     ) {
         try {
-            $objPmReqCard = new \Mobilpay_Payment_Request_Sms();
+            $objPmReqCard = new SmsRequest();
             $objPmReqCard->orderId = $orderId;
             $objPmReqCard->service = $serviceId;
             $objPmReqCard->signature = $this->mobilPayConfiguration->getSignature();
@@ -159,7 +164,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
     /**
      * @param array $creditCard
      *
-     * @return \Mobilpay_Payment_Instrument_Card
+     * @return CardInstrument
      * @throws NetopiaMobilPayException
      */
     protected function composeCreditCardObject(array $creditCard = [])
@@ -179,7 +184,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
             throw new NetopiaMobilPayException('Credit Card configuration error.');
         }
 
-        $objPmi = new \Mobilpay_Payment_Instrument_Card();
+        $objPmi = new CardInstrument();
 
         $objPmi->number = $creditCard['number'];
         $objPmi->expYear = $creditCard['expYear'];
@@ -193,7 +198,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
     /**
      * @param array $address
      *
-     * @return \Mobilpay_Payment_Address
+     * @return Address
      */
     protected function composeBillingAddressObject(array $address = [])
     {
@@ -217,7 +222,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
         /** @var array $address */
         $address = array_merge($addressDefault, $address);
 
-        $billingAddress = new \Mobilpay_Payment_Address();
+        $billingAddress = new Address();
         $billingAddress->type = $address['type'];
         $billingAddress->firstName = $address['firstName'];
         $billingAddress->lastName = $address['lastName'];
@@ -239,7 +244,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
     /**
      * @param array $address
      *
-     * @return \Mobilpay_Payment_Address
+     * @return Address
      */
     protected function composeShippingAddressObject(array $address = [])
     {
@@ -263,7 +268,7 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
         /** @var array $address */
         $address = array_merge($addressDefault, $address);
 
-        $shippingAddress = new \Mobilpay_Payment_Address();
+        $shippingAddress = new Address();
         $shippingAddress->type = $address['type'];
         $shippingAddress->firstName = $address['firstName'];
         $shippingAddress->lastName = $address['lastName'];
