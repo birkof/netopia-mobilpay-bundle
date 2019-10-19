@@ -23,10 +23,14 @@ class Configuration implements ConfigurationInterface
     /**
      * @return TreeBuilder
      */
-    public function getConfigTreeBuilder()
+    public function getConfigTreeBuilder(): TreeBuilder
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root(NetopiaMobilPayBundle::ALIAS);
+        if (Kernel::VERSION_ID >= 40200) {
+            $builder = new TreeBuilder(NetopiaMobilPayBundle::ALIAS);
+        } else {
+            $builder = new TreeBuilder();
+        }
+        $rootNode = \method_exists($builder, 'getRootNode') ? $builder->getRootNode() : $builder->root(NetopiaMobilPayBundle::ALIAS);
 
         $rootNode
             ->children()
@@ -35,6 +39,6 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('private_key')->defaultNull()->end()
             ->scalarNode('signature')->cannotBeEmpty()->defaultValue('XXXX-XXXX-XXXX-XXXX-XXXX')->end();
 
-        return $treeBuilder;
+        return $builder;
     }
 }
