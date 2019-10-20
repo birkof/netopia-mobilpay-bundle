@@ -13,6 +13,7 @@ namespace birkof\NetopiaMobilPay\DependencyInjection;
 use birkof\NetopiaMobilPay\NetopiaMobilPayBundle;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Symfony\Component\HttpKernel\Kernel;
 
 /**
  * Class Configuration
