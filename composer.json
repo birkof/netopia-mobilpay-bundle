@@ -13,7 +13,7 @@
     "php": "^7.1.3",
     "birkof/netopia-mobilpay": "^2.1",
     "symfony/monolog-bundle": "^3.5",
-    "symfony/routing": "^4.4 || ^5.0 || ^5.1"
+    "symfony/routing": "^4.4 || ^5.0 || ^5.1 || ^5.2"
   },
   "require-dev": {
   },
