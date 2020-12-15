@@ -54,3 +54,7 @@ And define ``netopia_mobilpay_payment_url``, ``netopia_mobilpay_public_cert``, `
 ## Usage
 
 > Follow the interface birkof\NetopiaMobilPay\Service\NetopiaMobilPayServiceInterface to see avaialable methods.
+
+### Credit Card
+### SMS Online
+### SMS Offline
