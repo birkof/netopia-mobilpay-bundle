@@ -94,12 +94,12 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
 
             // In case of having Billing Address.
             if (!empty($billingAddress)) {
-                $objPmReqCard->invoice->setBillingAddress($this->composeBillingAddressObject($billingAddress));
+                $objPmReqCard->invoice->setBillingAddress($this->composeAddressObject($billingAddress));
             }
 
             // In case of having Shipping Address.
             if (!empty($shippingAddress)) {
-                $objPmReqCard->invoice->setShippingAddress($this->composeShippingAddressObject($shippingAddress));
+                $objPmReqCard->invoice->setShippingAddress($this->composeAddressObject($shippingAddress));
             }
 
             // In case of having CC.
@@ -196,95 +196,41 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
     }
 
     /**
+     * Build a Mobilpay\Payment\Address from a plain array.
+     *
+     * Only the fields the library's Address actually serializes are set:
+     * type, firstName, lastName, address, email, mobilePhone. Any other keys
+     * (fiscalNumber, identityNumber, country, county, city, zipCode, bank,
+     * iban) are NOT supported by Mobilpay\Payment\Address::createXmlElement()
+     * and were previously assigned as dynamic properties that the library
+     * silently dropped from the payment request (and that PHP 8.2+ deprecates).
+     *
      * @param array $address
      *
      * @return Address
      */
-    protected function composeBillingAddressObject(array $address = [])
+    private function composeAddressObject(array $address = [])
     {
         $addressDefault = [
-            'type'           => 'person', // 'person' or 'company'
-            'firstName'      => null,
-            'lastName'       => null,
-            'fiscalNumber'   => null,
-            'identityNumber' => null,
-            'country'        => null,
-            'county'         => null,
-            'city'           => null,
-            'zipCode'        => null,
-            'address'        => null,
-            'email'          => null,
-            'mobilePhone'    => null,
-            'bank'           => null,
-            'iban'           => null,
+            'type'        => Address::TYPE_PERSON, // 'person' or 'company'
+            'firstName'   => null,
+            'lastName'    => null,
+            'address'     => null,
+            'email'       => null,
+            'mobilePhone' => null,
         ];
 
-        /** @var array $address */
         $address = array_merge($addressDefault, $address);
 
-        $billingAddress = new Address();
-        $billingAddress->type = $address['type'];
-        $billingAddress->firstName = $address['firstName'];
-        $billingAddress->lastName = $address['lastName'];
-        $billingAddress->fiscalNumber = $address['fiscalNumber'];
-        $billingAddress->identityNumber = $address['identityNumber'];
-        $billingAddress->country = $address['country'];
-        $billingAddress->county = $address['county'];
-        $billingAddress->city = $address['city'];
-        $billingAddress->zipCode = $address['zipCode'];
-        $billingAddress->address = $address['address'];
-        $billingAddress->email = $address['email'];
-        $billingAddress->mobilePhone = $address['mobilePhone'];
-        $billingAddress->bank = $address['bank'];
-        $billingAddress->iban = $address['iban'];
+        $addressObject = new Address();
+        $addressObject->type = $address['type'];
+        $addressObject->firstName = $address['firstName'];
+        $addressObject->lastName = $address['lastName'];
+        $addressObject->address = $address['address'];
+        $addressObject->email = $address['email'];
+        $addressObject->mobilePhone = $address['mobilePhone'];
 
-        return $billingAddress;
-    }
-
-    /**
-     * @param array $address
-     *
-     * @return Address
-     */
-    protected function composeShippingAddressObject(array $address = [])
-    {
-        $addressDefault = [
-            'type'           => 'person', // 'person' or 'company'
-            'firstName'      => null,
-            'lastName'       => null,
-            'fiscalNumber'   => null,
-            'identityNumber' => null,
-            'country'        => null,
-            'county'         => null,
-            'city'           => null,
-            'zipCode'        => null,
-            'address'        => null,
-            'email'          => null,
-            'mobilePhone'    => null,
-            'bank'           => null,
-            'iban'           => null,
-        ];
-
-        /** @var array $address */
-        $address = array_merge($addressDefault, $address);
-
-        $shippingAddress = new Address();
-        $shippingAddress->type = $address['type'];
-        $shippingAddress->firstName = $address['firstName'];
-        $shippingAddress->lastName = $address['lastName'];
-        $shippingAddress->fiscalNumber = $address['fiscalNumber'];
-        $shippingAddress->identityNumber = $address['identityNumber'];
-        $shippingAddress->country = $address['country'];
-        $shippingAddress->county = $address['county'];
-        $shippingAddress->city = $address['city'];
-        $shippingAddress->zipCode = $address['zipCode'];
-        $shippingAddress->address = $address['address'];
-        $shippingAddress->email = $address['email'];
-        $shippingAddress->mobilePhone = $address['mobilePhone'];
-        $shippingAddress->bank = $address['bank'];
-        $shippingAddress->iban = $address['iban'];
-
-        return $shippingAddress;
+        return $addressObject;
     }
 }
 
