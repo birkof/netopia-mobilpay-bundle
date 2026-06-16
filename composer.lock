@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8fdab68ffeb6efb4fcbbcf51a42013ab",
+    "content-hash": "f8a2fc7a8e2012f1f85fed6c26f745a6",
     "packages": [
         {
             "name": "birkof/netopia-mobilpay",
@@ -1900,7 +1900,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^7.4|^8.0"
+        "php": "^8.3"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"
