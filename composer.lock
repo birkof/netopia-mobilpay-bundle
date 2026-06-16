@@ -4,33 +4,44 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "da067df568a0302405378895a08ccb83",
+    "content-hash": "8fdab68ffeb6efb4fcbbcf51a42013ab",
     "packages": [
         {
             "name": "birkof/netopia-mobilpay",
-            "version": "v3.0.0",
+            "version": "v4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/birkof/netopia-mobilpay.git",
-                "reference": "3c3b9554e96d00848cc24eef30f72e1a0b2d4854"
+                "reference": "a7b0db35f44b45300677e45b58b9336871045b47"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/birkof/netopia-mobilpay/zipball/3c3b9554e96d00848cc24eef30f72e1a0b2d4854",
-                "reference": "3c3b9554e96d00848cc24eef30f72e1a0b2d4854",
+                "url": "https://api.github.com/repos/birkof/netopia-mobilpay/zipball/a7b0db35f44b45300677e45b58b9336871045b47",
+                "reference": "a7b0db35f44b45300677e45b58b9336871045b47",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
-                "ext-openssl": "*"
+                "ext-openssl": "*",
+                "php": ">=8.3"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^2",
+                "phpunit/phpunit": "^11"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "Mobilpay\\Payment\\": "src/Mobilpay/Payment/"
-                }
+                },
+                "classmap": [
+                    "src/Mobilpay/Global.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
             "authors": [
                 {
                     "name": "Daniel STANCU",
@@ -40,9 +51,9 @@
             "description": "Mirroring MobilePay library with composer PSR-4 autoloading capability.",
             "support": {
                 "issues": "https://github.com/birkof/netopia-mobilpay/issues",
-                "source": "https://github.com/birkof/netopia-mobilpay/tree/v3.0.0"
+                "source": "https://github.com/birkof/netopia-mobilpay/tree/v4.0.0"
             },
-            "time": "2022-04-18T16:00:49+00:00"
+            "time": "2026-06-16T10:00:26+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -1679,12 +1690,12 @@
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": "^7.4|^8.0"
     },
-    "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
 }
