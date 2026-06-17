@@ -1,3 +1,6 @@
 services:
     birkof\NetopiaMobilPay\Service\NetopiaMobilPayServiceInterface:
         alias: 'netopia_mobilpay.payment'
+
+    birkof\NetopiaMobilPay\Notification\NetopiaMobilPayIpnHandlerInterface:
+        alias: 'netopia_mobilpay.ipn_handler'

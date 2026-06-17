@@ -56,6 +56,28 @@ final class NetopiaMobilPayExtensionTest extends TestCase
             'netopia_mobilpay.payment',
             (string) $container->getAlias(NetopiaMobilPayServiceInterface::class)
         );
+
+        // Shared private configuration service.
+        self::assertTrue($container->hasDefinition('netopia_mobilpay.configuration'));
+        self::assertFalse($container->getDefinition('netopia_mobilpay.configuration')->isPublic());
+
+        // Public IPN handler service.
+        self::assertTrue($container->hasDefinition('netopia_mobilpay.ipn_handler'));
+        $handlerDefinition = $container->getDefinition('netopia_mobilpay.ipn_handler');
+        self::assertSame(
+            \birkof\NetopiaMobilPay\Notification\NetopiaMobilPayIpnHandler::class,
+            $handlerDefinition->getClass()
+        );
+        self::assertTrue($handlerDefinition->isPublic());
+
+        // IPN handler interface alias declared in services.yaml.
+        self::assertTrue(
+            $container->hasAlias(\birkof\NetopiaMobilPay\Notification\NetopiaMobilPayIpnHandlerInterface::class)
+        );
+        self::assertSame(
+            'netopia_mobilpay.ipn_handler',
+            (string) $container->getAlias(\birkof\NetopiaMobilPay\Notification\NetopiaMobilPayIpnHandlerInterface::class)
+        );
     }
 
     public function testCompiledContainerExposesConfiguredPaymentService(): void
@@ -91,5 +113,11 @@ final class NetopiaMobilPayExtensionTest extends TestCase
         self::assertSame('https://secure.mobilpay.ro', $configuration->getPaymentUrl());
         self::assertSame('AAAA-BBBB-CCCC-DDDD-EEEE', $configuration->getSignature());
         self::assertSame('INLINE-PUBLIC-CERT', $configuration->getPublicCert());
+
+        $handler = $container->get('netopia_mobilpay.ipn_handler');
+        self::assertInstanceOf(
+            \birkof\NetopiaMobilPay\Notification\NetopiaMobilPayIpnHandler::class,
+            $handler
+        );
     }
 }
