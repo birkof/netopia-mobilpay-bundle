@@ -15,18 +15,30 @@ namespace birkof\NetopiaMobilPay\Tests\DependencyInjection;
 
 use birkof\NetopiaMobilPay\DependencyInjection\Configuration;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
 
 final class ConfigurationTest extends TestCase
 {
     public function testDefaultConfigurationIsApplied(): void
     {
-        $processed = (new Processor())->processConfiguration(new Configuration(), []);
+        // signature is required, so it must be supplied; the rest fall back to defaults.
+        $processed = (new Processor())->processConfiguration(new Configuration(), [
+            ['signature' => 'AAAA-BBBB-CCCC-DDDD-EEEE'],
+        ]);
 
         self::assertSame('http://sandboxsecure.mobilpay.ro', $processed['payment_url']);
-        self::assertSame('XXXX-XXXX-XXXX-XXXX-XXXX', $processed['signature']);
+        self::assertSame('AAAA-BBBB-CCCC-DDDD-EEEE', $processed['signature']);
         self::assertNull($processed['public_cert']);
         self::assertNull($processed['private_key']);
+    }
+
+    public function testSignatureIsRequired(): void
+    {
+        $this->expectException(InvalidConfigurationException::class);
+
+        // No signature: the bundle must fail fast rather than boot with a bogus value.
+        (new Processor())->processConfiguration(new Configuration(), []);
     }
 
     public function testUserConfigurationOverridesDefaults(): void

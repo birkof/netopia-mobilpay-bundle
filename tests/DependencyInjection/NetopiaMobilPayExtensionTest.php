@@ -34,7 +34,8 @@ final class NetopiaMobilPayExtensionTest extends TestCase
         $container = new ContainerBuilder();
         $container->setParameter('kernel.project_dir', '/app');
 
-        (new NetopiaMobilPayExtension())->load([], $container);
+        // signature is required by the configuration tree.
+        (new NetopiaMobilPayExtension())->load([['signature' => 'AAAA-BBBB-CCCC-DDDD-EEEE']], $container);
 
         // Secrets (and other config) must NOT be exposed as container parameters:
         // Symfony dumps the parameter bag to the compiled container cache in
