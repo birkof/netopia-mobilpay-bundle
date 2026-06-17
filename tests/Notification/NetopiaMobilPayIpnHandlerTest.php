@@ -130,4 +130,40 @@ XML;
         $handler->decrypt('not-a-real-env-key', 'not-real-data', MobilpayGlobal::getSealCipher(), null);
     }
 
+    public function testConfirmResponseIsEmptyCrcXml(): void
+    {
+        $handler = $this->createHandler($this->generateKeyPair()['private']);
+
+        $xml = $handler->confirmResponse();
+
+        self::assertStringContainsString('<?xml', $xml);
+        self::assertStringContainsString('<crc/>', $xml);
+        self::assertStringNotContainsString('error_type', $xml);
+    }
+
+    public function testErrorResponseSetsTypeCodeAndEscapesMessage(): void
+    {
+        $handler = $this->createHandler($this->generateKeyPair()['private']);
+
+        $xml = $handler->errorResponse(
+            'bad <order> & "quote"',
+            NetopiaMobilPayIpnHandlerInterface::ERROR_TYPE_PERMANENT,
+            0x10
+        );
+
+        self::assertStringContainsString('error_type="2"', $xml);
+        self::assertStringContainsString('error_code="16"', $xml);
+        // Message must be XML-escaped, never injected as raw markup.
+        self::assertStringContainsString('&lt;order&gt;', $xml);
+        self::assertStringNotContainsString('<order>', $xml);
+    }
+
+    public function testErrorResponseDefaultsToPermanentType(): void
+    {
+        $handler = $this->createHandler($this->generateKeyPair()['private']);
+
+        $xml = $handler->errorResponse('nope');
+
+        self::assertStringContainsString('error_type="2"', $xml);
+    }
 }
