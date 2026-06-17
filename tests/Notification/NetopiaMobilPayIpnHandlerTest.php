@@ -137,7 +137,7 @@ XML;
         $xml = $handler->confirmResponse();
 
         self::assertStringContainsString('<?xml', $xml);
-        self::assertStringContainsString('<crc/>', $xml);
+        self::assertStringContainsString('<crc></crc>', $xml);
         self::assertStringNotContainsString('error_type', $xml);
     }
 

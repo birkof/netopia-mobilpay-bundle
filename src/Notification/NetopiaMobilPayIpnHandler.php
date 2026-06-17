@@ -43,8 +43,9 @@ final class NetopiaMobilPayIpnHandler implements NetopiaMobilPayIpnHandlerInterf
                 $iv,
             );
         } catch (\Throwable $e) {
-            // Generic message only: never log key material or raw ciphertext.
-            $this->logger->error('Unable to decrypt IPN notification.', ['reason' => $e->getMessage()]);
+            // Log only the numeric error code, never the vendor message: it names the failing
+            // crypto step (key load vs decrypt) — keep the handler opaque at all log levels.
+            $this->logger->error('Unable to decrypt IPN notification.', ['code' => $e->getCode()]);
 
             throw new NetopiaMobilPayException('Unable to decrypt IPN notification.');
         }
@@ -90,7 +91,9 @@ final class NetopiaMobilPayIpnHandler implements NetopiaMobilPayIpnHandlerInterf
 
         $document->appendChild($crc);
 
-        $xml = $document->saveXML();
+        // LIBXML_NOEMPTYTAG so an empty acknowledgement serializes as <crc></crc> (the form
+        // in Netopia's documented confirm sample) rather than a self-closing <crc/>.
+        $xml = $document->saveXML(null, LIBXML_NOEMPTYTAG);
 
         return $xml !== false ? $xml : '';
     }
