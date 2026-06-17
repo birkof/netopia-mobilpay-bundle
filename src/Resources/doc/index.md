@@ -54,3 +54,56 @@ And define ``netopia_mobilpay_payment_url``, ``netopia_mobilpay_public_cert``, `
 ## Usage
 
 > Follow the interface birkof\NetopiaMobilPay\Service\NetopiaMobilPayServiceInterface to see avaialable methods.
+
+
+## Handling the IPN (payment confirmation)
+
+Netopia POSTs the encrypted notification to your `confirm_url`. Decrypt it with the
+`NetopiaMobilPayIpnHandlerInterface` service (autowired by interface):
+
+```php
+use birkof\NetopiaMobilPay\Exception\NetopiaMobilPayException;
+use birkof\NetopiaMobilPay\Notification\NetopiaMobilPayIpnHandlerInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+public function ipn(Request $request, NetopiaMobilPayIpnHandlerInterface $ipn): Response
+{
+    try {
+        $result = $ipn->decrypt(
+            (string) $request->request->get('env_key'),
+            (string) $request->request->get('data'),
+            $request->request->get('cipher'), // null for legacy RC4 payloads
+            $request->request->get('iv')      // null for legacy RC4 payloads
+        );
+    } catch (NetopiaMobilPayException $e) {
+        // Transient failure on our side: ask Netopia to retry later.
+        return new Response(
+            $ipn->errorResponse('cannot process', $ipn::ERROR_TYPE_TEMPORARY),
+            200,
+            ['Content-Type' => 'application/xml']
+        );
+    }
+
+    if ($result->isConfirmed()) {
+        // SECURITY: the bundle proves the notification came from Netopia, but it
+        // cannot know the expected amount. Load the order by $result->purchaseId and
+        // verify $result->processedAmount matches BEFORE marking it paid.
+        // ... your fulfilment logic ...
+    }
+
+    return new Response(
+        $ipn->confirmResponse(),
+        200,
+        ['Content-Type' => 'application/xml']
+    );
+}
+```
+
+**Security checklist for the IPN endpoint**
+
+- Successful `decrypt()` authenticates the sender (only Netopia can seal to your public cert).
+- You MUST cross-check `purchaseId` against a real, unfulfilled order and confirm
+  `processedAmount` equals the amount you expected. The bundle cannot do this for you.
+- Only acknowledge with `confirmResponse()` after your own checks pass. On a transient
+  failure return `errorResponse(..., ERROR_TYPE_TEMPORARY)` so Netopia retries.
