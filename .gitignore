@@ -4,3 +4,4 @@ vendor
 .phpunit.result.cache
 graphify-out
 .serena
+docs
