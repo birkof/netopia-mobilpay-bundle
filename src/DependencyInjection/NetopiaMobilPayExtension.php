@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the NetopiaMobilPayBundle.
  *
@@ -12,6 +15,7 @@ namespace birkof\NetopiaMobilPay\DependencyInjection;
 
 use birkof\NetopiaMobilPay\Configuration\NetopiaMobilPayConfiguration;
 use birkof\NetopiaMobilPay\NetopiaMobilPayBundle;
+use birkof\NetopiaMobilPay\Notification\NetopiaMobilPayIpnHandler;
 use birkof\NetopiaMobilPay\Service\NetopiaMobilPayService;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -41,9 +45,12 @@ class NetopiaMobilPayExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $this->inflateServicesInConfig($config);
-        $this->assignParametersToContainer($container, $config);
 
-        // Services definition with configurations
+        // Services definition with configurations.
+        // NOTE: secrets (private_key, signature) are intentionally NOT exposed as
+        // container parameters — Symfony dumps those to the compiled container
+        // cache in cleartext. They are passed straight to the configuration
+        // service via method calls in injectAndConfigureServices() instead.
         $this->injectAndConfigureServices($container, $config);
     }
 
@@ -83,37 +90,36 @@ class NetopiaMobilPayExtension extends Extension
      * @param ContainerBuilder $container
      * @param array            $config
      */
-    private function assignParametersToContainer(ContainerBuilder $container, array $config)
-    {
-        $container->setParameter(sprintf('%s.payment_url', NetopiaMobilPayBundle::ALIAS), $config['payment_url']);
-        $container->setParameter(sprintf('%s.public_cert', NetopiaMobilPayBundle::ALIAS), $config['public_cert']);
-        $container->setParameter(sprintf('%s.private_key', NetopiaMobilPayBundle::ALIAS), $config['private_key']);
-        $container->setParameter(sprintf('%s.signature', NetopiaMobilPayBundle::ALIAS), $config['signature']);
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     * @param array            $config
-     */
     private function injectAndConfigureServices(ContainerBuilder $container, array $config)
     {
-        /** @var Definition $paymentConfigurationDefinition */
-        $paymentConfigurationDefinition = (new Definition(NetopiaMobilPayConfiguration::class))
+        $configurationId = sprintf('%s.configuration', NetopiaMobilPayBundle::ALIAS);
+
+        // Register the configuration ONCE as a private shared service so both the
+        // payment service and the IPN handler consume the same instance.
+        $configurationDefinition = (new Definition(NetopiaMobilPayConfiguration::class))
+            ->addArgument(new Reference('router'))
             ->addMethodCall('setPaymentUrl', [$config['payment_url']])
             ->addMethodCall('setProjectDir', ['%kernel.project_dir%'])
             ->addMethodCall('setPublicCert', [$config['public_cert']])
             ->addMethodCall('setPrivateKey', [$config['private_key']])
             ->addMethodCall('setSignature', [$config['signature']])
-            ->addArgument(new Reference('router'))
             ->setPublic(false);
 
-        /** @var Definition $paymentConfigurationDefinition */
+        $container->setDefinition($configurationId, $configurationDefinition);
+
         $paymentServiceDefinition = (new Definition(NetopiaMobilPayService::class))
-            ->addArgument($paymentConfigurationDefinition)
+            ->addArgument(new Reference($configurationId))
             ->addArgument(new Reference('router'))
             ->addArgument(new Reference('logger'))
             ->setPublic(true);
 
         $container->setDefinition(sprintf('%s.payment', NetopiaMobilPayBundle::ALIAS), $paymentServiceDefinition);
+
+        $ipnHandlerDefinition = (new Definition(NetopiaMobilPayIpnHandler::class))
+            ->addArgument(new Reference($configurationId))
+            ->addArgument(new Reference('logger'))
+            ->setPublic(true);
+
+        $container->setDefinition(sprintf('%s.ipn_handler', NetopiaMobilPayBundle::ALIAS), $ipnHandlerDefinition);
     }
 }

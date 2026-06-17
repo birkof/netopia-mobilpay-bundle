@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the NetopiaMobilPayBundle.
  *
@@ -38,7 +41,7 @@ class Configuration implements ConfigurationInterface
             ->scalarNode('payment_url')->defaultValue('http://sandboxsecure.mobilpay.ro')->end()
             ->scalarNode('public_cert')->defaultNull()->end()
             ->scalarNode('private_key')->defaultNull()->end()
-            ->scalarNode('signature')->cannotBeEmpty()->defaultValue('XXXX-XXXX-XXXX-XXXX-XXXX')->end();
+            ->scalarNode('signature')->isRequired()->cannotBeEmpty()->end();
 
         return $builder;
     }

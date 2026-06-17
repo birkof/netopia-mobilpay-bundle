@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the NetopiaMobilPayBundle.
  *
@@ -34,6 +37,9 @@ final class NetopiaMobilPayConfiguration
 
     /** @var string */
     private $paymentUrl;
+
+    /** @var string Immutable base URL used to derive the per-request payment endpoint. */
+    private $basePaymentUrl;
 
     /** @var string */
     private $publicCert;
@@ -98,7 +104,27 @@ final class NetopiaMobilPayConfiguration
      */
     public function setPaymentUrl($paymentUrl)
     {
+        $this->basePaymentUrl = $paymentUrl;
         $this->paymentUrl = $paymentUrl;
+
+        return $this;
+    }
+
+    /**
+     * Resolve the gateway endpoint for a single payment request from the
+     * immutable base URL. Token payments use the dedicated "/card4" endpoint.
+     *
+     * Recomputing from the base on every call prevents the "/card4" segment
+     * from accumulating across requests and from leaking into subsequent
+     * non-token payments when this configuration service is shared.
+     *
+     * @param bool $useTokenEndpoint
+     *
+     * @return NetopiaMobilPayConfiguration
+     */
+    public function resolvePaymentUrl($useTokenEndpoint)
+    {
+        $this->paymentUrl = $this->basePaymentUrl.($useTokenEndpoint ? '/card4' : '');
 
         return $this;
     }

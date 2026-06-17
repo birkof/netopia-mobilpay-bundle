@@ -29,18 +29,21 @@ final class NetopiaMobilPayExtensionTest extends TestCase
         self::assertSame('netopia_mobilpay', (new NetopiaMobilPayExtension())->getAlias());
     }
 
-    public function testLoadRegistersParametersServiceDefinitionAndAlias(): void
+    public function testLoadRegistersServiceDefinitionAndAliasWithoutExposingSecrets(): void
     {
         $container = new ContainerBuilder();
         $container->setParameter('kernel.project_dir', '/app');
 
-        (new NetopiaMobilPayExtension())->load([], $container);
+        // signature is required by the configuration tree.
+        (new NetopiaMobilPayExtension())->load([['signature' => 'AAAA-BBBB-CCCC-DDDD-EEEE']], $container);
 
-        // Parameters mirror the (default) processed configuration.
-        self::assertSame('http://sandboxsecure.mobilpay.ro', $container->getParameter('netopia_mobilpay.payment_url'));
-        self::assertSame('XXXX-XXXX-XXXX-XXXX-XXXX', $container->getParameter('netopia_mobilpay.signature'));
-        self::assertNull($container->getParameter('netopia_mobilpay.public_cert'));
-        self::assertNull($container->getParameter('netopia_mobilpay.private_key'));
+        // Secrets (and other config) must NOT be exposed as container parameters:
+        // Symfony dumps the parameter bag to the compiled container cache in
+        // cleartext. Configuration is passed to the service via method calls instead.
+        self::assertFalse($container->hasParameter('netopia_mobilpay.private_key'));
+        self::assertFalse($container->hasParameter('netopia_mobilpay.signature'));
+        self::assertFalse($container->hasParameter('netopia_mobilpay.public_cert'));
+        self::assertFalse($container->hasParameter('netopia_mobilpay.payment_url'));
 
         // Public payment service definition.
         self::assertTrue($container->hasDefinition('netopia_mobilpay.payment'));
@@ -53,6 +56,28 @@ final class NetopiaMobilPayExtensionTest extends TestCase
         self::assertSame(
             'netopia_mobilpay.payment',
             (string) $container->getAlias(NetopiaMobilPayServiceInterface::class)
+        );
+
+        // Shared private configuration service.
+        self::assertTrue($container->hasDefinition('netopia_mobilpay.configuration'));
+        self::assertFalse($container->getDefinition('netopia_mobilpay.configuration')->isPublic());
+
+        // Public IPN handler service.
+        self::assertTrue($container->hasDefinition('netopia_mobilpay.ipn_handler'));
+        $handlerDefinition = $container->getDefinition('netopia_mobilpay.ipn_handler');
+        self::assertSame(
+            \birkof\NetopiaMobilPay\Notification\NetopiaMobilPayIpnHandler::class,
+            $handlerDefinition->getClass()
+        );
+        self::assertTrue($handlerDefinition->isPublic());
+
+        // IPN handler interface alias declared in services.yaml.
+        self::assertTrue(
+            $container->hasAlias(\birkof\NetopiaMobilPay\Notification\NetopiaMobilPayIpnHandlerInterface::class)
+        );
+        self::assertSame(
+            'netopia_mobilpay.ipn_handler',
+            (string) $container->getAlias(\birkof\NetopiaMobilPay\Notification\NetopiaMobilPayIpnHandlerInterface::class)
         );
     }
 
@@ -89,5 +114,11 @@ final class NetopiaMobilPayExtensionTest extends TestCase
         self::assertSame('https://secure.mobilpay.ro', $configuration->getPaymentUrl());
         self::assertSame('AAAA-BBBB-CCCC-DDDD-EEEE', $configuration->getSignature());
         self::assertSame('INLINE-PUBLIC-CERT', $configuration->getPublicCert());
+
+        $handler = $container->get('netopia_mobilpay.ipn_handler');
+        self::assertInstanceOf(
+            \birkof\NetopiaMobilPay\Notification\NetopiaMobilPayIpnHandler::class,
+            $handler
+        );
     }
 }

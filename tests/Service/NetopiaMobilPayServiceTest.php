@@ -189,6 +189,27 @@ final class NetopiaMobilPayServiceTest extends TestCase
         self::assertNotEmpty($request->getCipher(), 'OpenSSL seal cipher must be recorded.');
     }
 
+    public function testCreateCreditCardPaymentObjectRejectsEmptyOrderId(): void
+    {
+        $this->expectException(NetopiaMobilPayException::class);
+
+        $this->createService()->createCreditCardPaymentObject('', '49.99');
+    }
+
+    public function testCreateCreditCardPaymentObjectRejectsNonPositiveAmount(): void
+    {
+        $this->expectException(NetopiaMobilPayException::class);
+
+        $this->createService()->createCreditCardPaymentObject('ORDER-001', '0');
+    }
+
+    public function testCreateCreditCardPaymentObjectRejectsUnsupportedCurrency(): void
+    {
+        $this->expectException(NetopiaMobilPayException::class);
+
+        $this->createService()->createCreditCardPaymentObject('ORDER-001', '49.99', 'GBP');
+    }
+
     private function generateSelfSignedCertificate(): string
     {
         $privateKey = openssl_pkey_new([
