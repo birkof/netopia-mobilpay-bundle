@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of the NetopiaMobilPayBundle.
  *
@@ -80,6 +83,10 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
         array $creditCard = [],
         array $extraParameters = []
     ) {
+        // Validate at the boundary BEFORE the try/catch, so a specific input error
+        // is not masked by the generic "Payment failed." handler below.
+        $this->assertValidPaymentInput($orderId, $amount, $currency);
+
         try {
             $objPmReqCard = new CardRequest();
             $objPmReqCard->orderId = $orderId;
@@ -164,6 +171,45 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
     }
 
     /**
+     * Validate the core payment inputs at the system boundary.
+     *
+     * @param mixed $orderId
+     * @param mixed $amount
+     * @param mixed $currency
+     *
+     * @throws NetopiaMobilPayException when an input is missing or invalid
+     */
+    private function assertValidPaymentInput($orderId, $amount, $currency): void
+    {
+        if (null === $orderId || '' === (string) $orderId) {
+            throw new NetopiaMobilPayException('Order ID is required.');
+        }
+
+        if (!is_numeric($amount) || (float) $amount <= 0) {
+            throw new NetopiaMobilPayException('Payment amount must be a positive number.');
+        }
+
+        $allowedCurrencies = [
+            NetopiaMobilPayConfiguration::CURRENCY_RON,
+            NetopiaMobilPayConfiguration::CURRENCY_EUR,
+            NetopiaMobilPayConfiguration::CURRENCY_USD,
+        ];
+
+        if (!in_array($currency, $allowedCurrencies, true)) {
+            throw new NetopiaMobilPayException('Unsupported currency.');
+        }
+    }
+
+    /**
+     * Build a Mobilpay\Payment\Instrument\Card from raw card data.
+     *
+     * SECURITY / PCI-DSS WARNING: passing a raw PAN, CVV and expiry through this
+     * server-side path places the surrounding application in PCI-DSS SAQ-D scope
+     * (full audit). The recommended Netopia flow is the hosted payment page, where
+     * the card data never touches the merchant server — leave $creditCard empty and
+     * let the gateway collect the card details. Only use this method if you are
+     * already PCI-DSS certified for server-side card handling.
+     *
      * @param array $creditCard
      *
      * @return CardInstrument

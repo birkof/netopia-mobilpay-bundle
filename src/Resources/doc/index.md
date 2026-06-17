@@ -107,3 +107,15 @@ public function ipn(Request $request, NetopiaMobilPayIpnHandlerInterface $ipn): 
   `processedAmount` equals the amount you expected. The bundle cannot do this for you.
 - Only acknowledge with `confirmResponse()` after your own checks pass. On a transient
   failure return `errorResponse(..., ERROR_TYPE_TEMPORARY)` so Netopia retries.
+
+
+## Card data and PCI scope
+
+`createCreditCardPaymentObject()` accepts an optional `$creditCard` array (PAN, CVV,
+expiry). **Passing raw card data through your server puts the entire application in
+PCI-DSS SAQ-D scope (full audit).**
+
+The recommended Netopia integration is the **hosted payment page**: leave `$creditCard`
+empty and let the gateway collect the card details, so no PAN/CVV ever touches your
+server. Only use the raw-card path if you are already PCI-DSS certified for server-side
+card handling.
