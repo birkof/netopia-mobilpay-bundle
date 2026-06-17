@@ -29,18 +29,20 @@ final class NetopiaMobilPayExtensionTest extends TestCase
         self::assertSame('netopia_mobilpay', (new NetopiaMobilPayExtension())->getAlias());
     }
 
-    public function testLoadRegistersParametersServiceDefinitionAndAlias(): void
+    public function testLoadRegistersServiceDefinitionAndAliasWithoutExposingSecrets(): void
     {
         $container = new ContainerBuilder();
         $container->setParameter('kernel.project_dir', '/app');
 
         (new NetopiaMobilPayExtension())->load([], $container);
 
-        // Parameters mirror the (default) processed configuration.
-        self::assertSame('http://sandboxsecure.mobilpay.ro', $container->getParameter('netopia_mobilpay.payment_url'));
-        self::assertSame('XXXX-XXXX-XXXX-XXXX-XXXX', $container->getParameter('netopia_mobilpay.signature'));
-        self::assertNull($container->getParameter('netopia_mobilpay.public_cert'));
-        self::assertNull($container->getParameter('netopia_mobilpay.private_key'));
+        // Secrets (and other config) must NOT be exposed as container parameters:
+        // Symfony dumps the parameter bag to the compiled container cache in
+        // cleartext. Configuration is passed to the service via method calls instead.
+        self::assertFalse($container->hasParameter('netopia_mobilpay.private_key'));
+        self::assertFalse($container->hasParameter('netopia_mobilpay.signature'));
+        self::assertFalse($container->hasParameter('netopia_mobilpay.public_cert'));
+        self::assertFalse($container->hasParameter('netopia_mobilpay.payment_url'));
 
         // Public payment service definition.
         self::assertTrue($container->hasDefinition('netopia_mobilpay.payment'));

@@ -41,9 +41,12 @@ class NetopiaMobilPayExtension extends Extension
         $config = $this->processConfiguration($configuration, $configs);
 
         $this->inflateServicesInConfig($config);
-        $this->assignParametersToContainer($container, $config);
 
-        // Services definition with configurations
+        // Services definition with configurations.
+        // NOTE: secrets (private_key, signature) are intentionally NOT exposed as
+        // container parameters — Symfony dumps those to the compiled container
+        // cache in cleartext. They are passed straight to the configuration
+        // service via method calls in injectAndConfigureServices() instead.
         $this->injectAndConfigureServices($container, $config);
     }
 
@@ -77,18 +80,6 @@ class NetopiaMobilPayExtension extends Extension
                 }
             }
         );
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     * @param array            $config
-     */
-    private function assignParametersToContainer(ContainerBuilder $container, array $config)
-    {
-        $container->setParameter(sprintf('%s.payment_url', NetopiaMobilPayBundle::ALIAS), $config['payment_url']);
-        $container->setParameter(sprintf('%s.public_cert', NetopiaMobilPayBundle::ALIAS), $config['public_cert']);
-        $container->setParameter(sprintf('%s.private_key', NetopiaMobilPayBundle::ALIAS), $config['private_key']);
-        $container->setParameter(sprintf('%s.signature', NetopiaMobilPayBundle::ALIAS), $config['signature']);
     }
 
     /**

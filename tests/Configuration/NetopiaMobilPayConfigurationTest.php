@@ -62,6 +62,25 @@ final class NetopiaMobilPayConfigurationTest extends TestCase
         self::assertSame('AAAA-BBBB-CCCC-DDDD-EEEE', $config->getSignature());
     }
 
+    public function testResolvePaymentUrlDerivesTokenEndpointFromBaseWithoutAccumulating(): void
+    {
+        $config = $this->createConfiguration();
+        $config->setPaymentUrl('https://secure.mobilpay.ro');
+
+        // Token payments use the dedicated /card4 endpoint.
+        $config->resolvePaymentUrl(true);
+        self::assertSame('https://secure.mobilpay.ro/card4', $config->getPaymentUrl());
+
+        // Repeated token resolves must NOT stack "/card4/card4".
+        $config->resolvePaymentUrl(true);
+        self::assertSame('https://secure.mobilpay.ro/card4', $config->getPaymentUrl());
+
+        // A subsequent non-token payment falls back to the base URL,
+        // proving the previous "/card4" did not contaminate shared state.
+        $config->resolvePaymentUrl(false);
+        self::assertSame('https://secure.mobilpay.ro', $config->getPaymentUrl());
+    }
+
     public function testSetPublicCertReadsFileContentsWhenPathExists(): void
     {
         $file = tempnam(sys_get_temp_dir(), 'cert');

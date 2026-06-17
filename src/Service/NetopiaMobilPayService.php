@@ -107,20 +107,22 @@ final class NetopiaMobilPayService implements NetopiaMobilPayServiceInterface
                 $objPmReqCard->paymentInstrument = $this->composeCreditCardObject($creditCard);
             }
 
+            $isTokenPayment = !empty($extraParameters['token_id']);
+
             // In case of having payment extra parameters.
             if (!empty($extraParameters)) {
                 $objPmReqCard->params = $extraParameters;
 
                 // PLEASE STORE AND USE THIS TOKEN WITH MAXIMUM CARE!!!
-                if (!empty($extraParameters['token_id'])) {
+                if ($isTokenPayment) {
                     $objPmReqCard->invoice->tokenId = $extraParameters['token_id'];
-
-                    // Payment with Token need a special route.
-                    $this->mobilPayConfiguration->setPaymentUrl(
-                        $this->mobilPayConfiguration->getPaymentUrl().'/card4'
-                    );
                 }
             }
+
+            // Resolve the gateway endpoint for THIS request from the immutable
+            // base URL (token payments use "/card4") without mutating shared
+            // configuration state across requests.
+            $this->mobilPayConfiguration->resolvePaymentUrl($isTokenPayment);
 
             $objPmReqCard->encrypt($this->mobilPayConfiguration->getPublicCert());
 
